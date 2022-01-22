@@ -42,10 +42,7 @@ def main():
     populate_deck(deck, suits, ranks)
     deal(deck, user_hand, computer_hand)
 
-    #диагностика 6 против туза
-    user_card = [{"цена": 6, "масть": "кони"}, {"цена": 14, "масть": "кони"}, {"цена": 9, "масть": "кони"}]
-    computer_card = [{"цена": 14, "масть": "кони"}, {"цена": 6, "масть": "кони"}, {"цена": 10 "масть": "кони"}]
-    
+
     while user_hand and computer_hand:
         new_round(user_hand, computer_hand, table)
 
@@ -112,14 +109,14 @@ def new_round(user_hand, computer_hand, table):
     # ненормальный подсчёт
     if user_card["цена"] == 6 and computer_card["цена"] == 14:
         print("игрок победил и забирает карты: ")
-            for card in table:
-                user_hand.insert(0, card)
-                print(card["цена"], card["масть"], end=", ")
+        for card in table:
+            user_hand.insert(0, card)
+            print(card["цена"], card["масть"], end=", ")
     elif computer_card["цена"] == 6 and user_card["цена"] == 14:
         print("компьютер победил и забирает карты: ")
-            for card in table:
-                computer_hand.insert(0, card)
-                print(card["цена"], card["масть"], end=", ")
+        for card in table:
+            computer_hand.insert(0, card)
+            print(card["цена"], card["масть"], end=", ")
 
     #нормальный подсчёт
     else:
