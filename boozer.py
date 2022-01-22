@@ -1,68 +1,141 @@
-import random as rnd
+"""
+    создать колоду (36):
+        карта:
+            масть (черви, бубны, пики, крести)
+            цена (6-14)
+    
+    перемешать колоду
 
-deck = []
+    разделить колоду на карты игрока и карты компа
 
-suits = ("черви", "буби", "пики", "крести")
-def make_deck():
-    # колода
+    раунд:
+        выбрасываем карту игрока
+        выбрасываем карту компа
+
+        игрок > комп:
+            игрок забирает все карты на столе
+
+        игрок < комп:
+            комп забирает все карты на столе
+
+        игрок == комп (спор):
+            выбрасываем снова
+
+    выигрыш и проигрыш:
+        кончились карты
+        нечем ответить в споре
+"""
+
+import random
+import os
+
+
+def main():
+    deck = []
+    table = []
+    user_hand = []
+    computer_hand = []
+
+    suits = ("червей", "бубен", "пик", "крестей")
+    ranks = range(6, 15)
+
+    populate_deck(deck, suits, ranks)
+    deal(deck, user_hand, computer_hand)
+
+    #диагностика 6 против туза
+    user_card = [{"цена": 6, "масть": "кони"}, {"цена": 14, "масть": "кони"}, {"цена": 9, "масть": "кони"}]
+    computer_card = [{"цена": 14, "масть": "кони"}, {"цена": 6, "масть": "кони"}, {"цена": 10 "масть": "кони"}]
+    
+    while user_hand and computer_hand:
+        new_round(user_hand, computer_hand, table)
+
+    print("----- результат игры: -----")
+    if user_hand:
+        print("победил игрок")
+    else:
+        print("победил компьютер")
+
+
+def populate_deck(deck, suits, ranks):
     for suit in suits:
-        for i in range(6, 15):
+        for rank in ranks:
             card = {}
             card["масть"] = suit
-            card["цена"] = i 
+            card["цена"] = rank
             deck.append(card)
-
-    # перемешивание колоды
-    rnd.shuffle(deck)
+    random.shuffle(deck)
 
 
-def make_table():
-    # создание стола
-    table = []
-def make_hands():
-    # создание рук c раздачей карт
-    user_hand = deck[:18]
-    computer_hand = deck[18:]
+def deal(deck, user_hand, computer_hand):
+    for card in deck[:len(deck) // 2]:
+        user_hand.append(card)
+    for card in deck[len(deck) // 2:]:
+        computer_hand.append(card)
 
 
 def new_round(user_hand, computer_hand, table):
-    while user_hand and computer_hand:
-        # делаем ход
+    os.system("cls")
+    print("----- карты игрока -----")
+    for card in user_hand:
+        print(card["цена"], card["масть"], end=", ")
+
+    print("\n\n----- карты компьютера -----")
+    for card in computer_hand:
+        print(card["цена"], card["масть"], end=", ")
+
+    user_card = user_hand[-1]
+    computer_card = computer_hand[-1]
+
+    print("\n\n----- ход игрока -----")
+    print(user_card["цена"], user_card["масть"])
+
+    print("\n----- ход компьютера -----")
+    print(computer_card["цена"], computer_card["масть"])
+
+    table.append(user_hand.pop())
+    table.append(computer_hand.pop())
+
+    while user_card["цена"] == computer_card["цена"]:
+        user_card = user_hand[-1]
+        computer_card = computer_hand[-1]
+
+        print("\n\n----- ход игрока в споре -----")
+        print(user_card["цена"], user_card["масть"])
+
+        print("\n----- ход компьютера в споре -----")
+        print(computer_card["цена"], computer_card["масть"])
+
         table.append(user_hand.pop())
         table.append(computer_hand.pop())
 
-        # сравнием карты
-        user_card = table[-2]["цена"]
-        computer_card = table[-1]["цена"]
+    print("\n----- результат хода -----")
+    # ненормальный подсчёт
+    if user_card["цена"] == 6 and computer_card["цена"] == 14:
+        print("игрок победил и забирает карты: ")
+            for card in table:
+                user_hand.insert(0, card)
+                print(card["цена"], card["масть"], end=", ")
+    elif computer_card["цена"] == 6 and user_card["цена"] == 14:
+        print("компьютер победил и забирает карты: ")
+            for card in table:
+                computer_hand.insert(0, card)
+                print(card["цена"], card["масть"], end=", ")
 
-        print("игрок выкинул", user_card)
-        print("")
-
-        if user_card > computer_card:
-            print("win")
-            user_hand = table + user_hand
-            print(user_hand)
-            table.clear()
-        elif user_card < computer_card:
-            print("loss")
-            computer_hand = table + computer_hand
-            print(user_hand)
-            table.clear()
+    #нормальный подсчёт
+    else:
+        if user_card["цена"] > computer_card["цена"]:
+            print("игрок победил и забирает карты: ")
+            for card in table:
+                user_hand.insert(0, card)
+                print(card["цена"], card["масть"], end=", ")
         else:
-            print("continuation")
-            new_round()
-    if user_hand == True:
-        print("Ты выйграл!")
-    elif computer_hand == True:
-        print("Ты проиграл!")
+            print("компьютер победил и забирает карты: ")
+            for card in table:
+                computer_hand.insert(0, card)
+                print(card["цена"], card["масть"], end=", ")
 
+    table.clear()
+    input("\n\nENTER - следующий ход")
 
+main()
 
-def new_game():
-    make_deck()
-    make_table()
-    make_hands()
-    new_round(user_hand, computer_hand, table)
-
-
-new_game() #fixme ошибка про user_hand; user_hand не найден в new_round
